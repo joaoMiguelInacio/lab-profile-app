@@ -19,21 +19,23 @@ import { AuthContext } from './../context/auth.context';
 const LogIn = props => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  
+  const isError = username === '';
+  const [show, setShow] = useState(false);
+  const handleClick = () => setShow(!show);
+
   const [errorMessage, setErrorMessage] = useState(undefined);
 
   const { logInUser } = useContext(AuthContext);
 
   const API_URL = 'http://localhost:5005';
-  const isError = username === '';
-  const [show, setShow] = useState(false);
 
-  const handleClick = () => setShow(!show);
   const handleLoginSubmit = e => {
     e.preventDefault();
     const requestBody = { username, password };
-    console.log(username, password)
+
     axios
-      .post(`${API_URL}/auth/login`, requestBody)
+      .post(`${API_URL}/api/auth/login`, requestBody)
       .then(response => {
         console.log('JWT token', response.data.authToken);
 
@@ -122,7 +124,7 @@ const LogIn = props => {
               >
                 Login
               </Button>
-              {errorMessage && <p className="error-message">{errorMessage}</p>}
+              {errorMessage && <FormErrorMessage>{errorMessage}</FormErrorMessage>}
             </Flex>
           </Flex>
         </Flex>

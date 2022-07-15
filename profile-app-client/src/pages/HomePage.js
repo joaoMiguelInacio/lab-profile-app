@@ -1,9 +1,8 @@
 import React from 'react';
 import { Button, Container, Flex, Heading } from '@chakra-ui/react';
+import { Link } from 'react-router-dom';
 
 const Homepage = () => {
-  const handleClick = () => console.log("signup");
-  const handleClick2 = () => console.log("login");
   return (
     <Flex justify="space-around" m="2vw">
       <Flex w="45%" direction="column" gap="30vh" fontSize="xl">
@@ -16,11 +15,11 @@ const Homepage = () => {
           </Heading>
         </Container>
         <Flex direction="column" gap="2vw" fontSize="xl">
-        <Button onClick={handleClick} w="50%" alignSelf="center">
-            Sign up
+        <Button w="50%" alignSelf="center">
+            <Link to="/signup">Sign up</Link>
           </Button>
-          <Button onClick={handleClick2} w="50%" alignSelf="center">
-            Log in
+          <Button w="50%" alignSelf="center">
+            <Link to="/login">Log in</Link>
           </Button>
         </Flex>
       </Flex>

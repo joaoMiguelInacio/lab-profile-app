@@ -2,11 +2,11 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User.model");
 const fileUploader = require("../config/cloudinary.config");
+const { isAuthenticated } = require("../middleware/jwt.middleware");
 
-
-router.get("/users", async (req, res, next) => {
+router.get("/users", isAuthenticated, async (req, res, next) => {
   try {
-    return res.status(200).json(req.user);
+    res.status(200).json(req.payload);
   } catch (error) {
     next(error);
   }

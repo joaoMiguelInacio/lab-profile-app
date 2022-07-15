@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import {
   Flex,
   FormControl,
@@ -12,9 +12,8 @@ import {
   Heading,
   Container,
 } from '@chakra-ui/react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { AuthContext } from './../context/auth.context';
 
 const LogIn = props => {
   const [username, setUsername] = useState('');
@@ -24,24 +23,23 @@ const LogIn = props => {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
 
-  const [errorMessage, setErrorMessage] = useState(undefined);
+  const navigate = useNavigate();
 
-  const { logInUser } = useContext(AuthContext);
+  const [errorMessage, setErrorMessage] = useState(undefined);
 
   const API_URL = 'http://localhost:5005';
 
   const handleLoginSubmit = e => {
     e.preventDefault();
     const requestBody = { username, password };
+    console.log(requestBody)
 
     axios
       .post(`${API_URL}/api/auth/login`, requestBody)
       .then(response => {
         console.log('JWT token', response.data.authToken);
-
-        const token = response.data.authToken;
-        logInUser(token);
-        props.history.push('/');
+        localStorage.setItem("authToken", response.data.authToken)
+        navigate(`/`);
       })
       .catch(error => {
         const errorDescription = error.response.data.message;

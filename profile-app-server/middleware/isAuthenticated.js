@@ -20,9 +20,8 @@ function getTokenFromHeaders (req) {
     return token;
   } 
   
-  return null;
+  return res.sendStatus(401);
 }
- 
  
 // Export the middleware so that we can use it to create a protected routes
 module.exports = {

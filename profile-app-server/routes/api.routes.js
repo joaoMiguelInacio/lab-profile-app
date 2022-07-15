@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const User = require("../models/User.model");
 const fileUploader = require("../config/cloudinary.config");
-const { isAuthenticated } = require("../middleware/jwt.middleware");
+const { isAuthenticated } = require("../middleware/isAuthenticated");
 
 router.get("/users", isAuthenticated, async (req, res, next) => {
   try {

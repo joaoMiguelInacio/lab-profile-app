@@ -14,6 +14,7 @@ const NavBar = () => {
             <NavLink to="/signup">SignUp</NavLink>
             <NavLink to="/login">LogIn</NavLink>
             <NavLink to="/profile">Profile</NavLink>
+            <NavLink to="/logout">LogOut</NavLink>
             <ColorModeSwitcher m="2vw 2vw auto 75vw " />
     </Flex>
 

@@ -1,6 +1,7 @@
 const router = require('express').Router();
 
 const jwt = require('jsonwebtoken');
+const isAuthenticated = require ('../middleware/isAuthenticated')
 
 // ℹ️ Handles password encryption
 const bcrypt = require('bcrypt');
@@ -12,9 +13,16 @@ const saltRounds = 10;
 // Require the User model in order to interact with the database
 const User = require('../models/User.model');
 
+// Require the Token model in order to interact with the database
+const Token = require('../models/Token.model');
+
 // Require necessary (isLoggedOut and isLiggedIn) middleware in order to control access to specific routes
 const isLoggedOut = require('../middleware/isLoggedOut');
 const isLoggedIn = require('../middleware/isLoggedIn');
+
+router.get('/verify', (req,res) =>{
+  res.json(req.user);
+}); 
 
 router.post('/signup', isLoggedOut, (req, res) => {
   const { username, password, campus, course } = req.body;
@@ -63,21 +71,8 @@ router.post('/signup', isLoggedOut, (req, res) => {
           course,
         });
       })
-      .then((user) => {
-        // Deconstruct the user object to omit the password
-        const { _id, username, campus, course } = user;
-
-        // Create an object that will be set as the token payload
-        const payload = { _id, username, campus, course };
-
-        // Create and sign the token
-        const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
-          algorithm: 'HS256',
-          expiresIn: '2min',
-        });
-
-        // Send the token as the response
-        res.status(200).json({ authToken: authToken });
+      .then(() => {
+        return res.status(201).json({ message: `New user created: ${username}` });
       })
       .catch((error) => {
         if (error instanceof mongoose.Error.ValidationError) {
@@ -94,7 +89,7 @@ router.post('/signup', isLoggedOut, (req, res) => {
   });
 });
 
-router.post('/login', isLoggedOut, (req, res, next) => {
+router.post('/login', isLoggedOut, async (req, res, next) => {
   const { username, password } = req.body;
 
   if (!username) {
@@ -112,7 +107,7 @@ router.post('/login', isLoggedOut, (req, res, next) => {
   }
 
   // Search the database for a user with the username submitted in the form
-User.findOne({ username })
+  User.findOne({ username })
     .then((user) => {
       // If the user isn't found, send the message that user provided wrong credentials
       if (!user) {
@@ -126,18 +121,19 @@ User.findOne({ username })
         }
         // Deconstruct the user object to omit the password
         const { _id, username, campus, course } = user;
-
         // Create an object that will be set as the token payload
         const payload = { _id, username, campus, course };
 
         // Create and sign the token
         const authToken = jwt.sign(payload, process.env.TOKEN_SECRET, {
           algorithm: 'HS256',
-          expiresIn: '2min',
+          expiresIn: '15s',
         });
-
+        const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET);
+        Token.create({ token : refreshToken });
+        
         // Send the token as the response
-        res.status(200).json({ authToken: authToken });
+        res.status(200).json({ authToken: authToken, refreshToken: refreshToken  });
       });
     })
 
@@ -149,13 +145,9 @@ User.findOne({ username })
     });
 });
 
-router.get('/logout', isLoggedIn, (req, res) => {
-  req.session.destroy((err) => {
-    if (err) {
-      return res.status(500).json({ errorMessage: err.message });
-    }
-    res.json({ message: 'Done' });
-  });
+router.delete('/logout', async (req, res) => {
+  const deletedToken = await Token.deleteMany();
+  res.status(201).json({ message: `User Logged Out, ${deletedToken.deletedCount} token deleted` });
 });
 
 module.exports = router;

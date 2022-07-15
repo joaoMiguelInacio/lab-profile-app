@@ -64,7 +64,6 @@ router.post('/signup', isLoggedOut, (req, res) => {
         });
       })
       .then((user) => {
-        console.log(user)
         // Deconstruct the user object to omit the password
         const { _id, username, campus, course } = user;
 

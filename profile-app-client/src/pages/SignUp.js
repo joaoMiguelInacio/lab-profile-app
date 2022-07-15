@@ -46,7 +46,7 @@ const SignUp = props => {
     e.preventDefault();
     try {
       await axios.post(`${API_URL}/api/auth/signup`, { username, password, campus, course})
-      navigate(`/login`);
+      navigate(`/profile`);
     } catch ( error ) {
         const errorDescription = error.response.data.message;
         setErrorMessage(errorDescription);

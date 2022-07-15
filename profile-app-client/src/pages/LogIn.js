@@ -32,14 +32,13 @@ const LogIn = props => {
   const handleLoginSubmit = e => {
     e.preventDefault();
     const requestBody = { username, password };
-    console.log(requestBody)
 
     axios
       .post(`${API_URL}/api/auth/login`, requestBody)
       .then(response => {
         console.log('JWT token', response.data.authToken);
         localStorage.setItem("authToken", response.data.authToken)
-        navigate(`/`);
+        navigate(`/profile`);
       })
       .catch(error => {
         const errorDescription = error.response.data.message;
